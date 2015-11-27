@@ -1,10 +1,10 @@
 # Dockerfile for swarm integration test environment.
 # Use with run_in_docker.sh
 
-FROM dockerswarm/dind:1.6.0
+FROM dockerswarm/dind:1.9.0
 
 # Install dependencies.
-RUN apt-get update && apt-get install -y --no-install-recommends git file \
+RUN apt-get update && apt-get install -y --no-install-recommends git file parallel \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install golang

@@ -13,6 +13,7 @@ func TestMatch(t *testing.T) {
 
 	img.Id = "378954456789"
 	img.RepoTags = []string{"name:latest"}
+	img.RepoDigests = []string{"name@sha256:a973f1415c489a934bf56dd653079d36b4ec717760215645726439de9705911d"}
 
 	assert.True(t, img.Match("378954456789", true))
 	assert.True(t, img.Match("3789", true))
@@ -33,6 +34,9 @@ func TestMatch(t *testing.T) {
 	assert.True(t, img.Match("name", false))
 	assert.False(t, img.Match("nam", false))
 	assert.False(t, img.Match("na", false))
+
+	assert.True(t, img.Match("name@sha256:a973f1415c489a934bf56dd653079d36b4ec717760215645726439de9705911d", true))
+	assert.False(t, img.Match("name@sha256:111111415c489a934bf56dd653079d36b4ec717760215645726439de9705911d", true))
 }
 
 func TestMatchPrivateRepo(t *testing.T) {
@@ -52,7 +56,7 @@ func TestMatchPrivateRepo(t *testing.T) {
 }
 
 func TestImagesFilterWithLabelFilter(t *testing.T) {
-	engine := NewEngine("test", 0)
+	engine := NewEngine("test", 0, engOpts)
 	images := Images{
 		{dockerclient.Image{Id: "a"}, engine},
 		{dockerclient.Image{
@@ -69,7 +73,7 @@ func TestImagesFilterWithLabelFilter(t *testing.T) {
 }
 
 func TestImagesFilterWithNameFilter(t *testing.T) {
-	engine := NewEngine("test", 0)
+	engine := NewEngine("test", 0, engOpts)
 	images := Images{
 		{
 			dockerclient.Image{
@@ -93,7 +97,7 @@ func TestImagesFilterWithNameFilter(t *testing.T) {
 }
 
 func TestImagesFilterWithNameFilterWithTag(t *testing.T) {
-	engine := NewEngine("test", 0)
+	engine := NewEngine("test", 0, engOpts)
 	images := Images{
 		{
 			dockerclient.Image{

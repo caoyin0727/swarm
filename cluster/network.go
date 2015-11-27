@@ -94,3 +94,46 @@ func (networks Networks) Get(IDOrName string) *Network {
 
 	return nil
 }
+
+// List returns a network using it's ID or Name
+func (networks Networks) List(IDOrName string) Networks {
+	// Abort immediately if the name is empty.
+	if len(IDOrName) == 0 {
+		return nil
+	}
+
+	candidates := Networks{}
+
+	// Match exact or short Network ID.
+	for _, network := range networks {
+		if network.ID == IDOrName || stringid.TruncateID(network.ID) == IDOrName {
+			candidates = append(candidates, network)
+		}
+	}
+
+	// Match name, /name or engine/name.
+	for _, network := range networks {
+		if network.Name == IDOrName || network.Engine.ID+"/"+network.Name == IDOrName || network.Engine.Name+"/"+network.Name == IDOrName {
+			candidates = append(candidates, network)
+		}
+	}
+
+	// Match name, /name or engine/name.
+	for _, network := range networks {
+		if network.Name == "/"+IDOrName {
+			candidates = append(candidates, network)
+		}
+	}
+
+	return candidates
+}
+
+func (networks Networks) Endpoints() map[string]dockerclient.EndpointResource {
+	endpoints := map[string]dockerclient.EndpointResource{}
+	for _, network := range networks {
+		for k, v := range network.Containers {
+			endpoints[k] = v
+		}
+	}
+	return endpoints
+}

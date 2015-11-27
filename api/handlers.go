@@ -211,6 +211,25 @@ func getNetworks(c *context, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(out)
 }
 
+// GET /networks/{networkid:.*}
+func getNetwork(c *context, w http.ResponseWriter, r *http.Request) {
+	var id = mux.Vars(r)["networkid"]
+	if network := c.cluster.Networks().Uniq().Get(id); network != nil {
+		if network.Scope == "local" {
+			// Set the network ID in the proxied URL path.
+			r.URL.Path = strings.Replace(r.URL.Path, id, network.ID, 1)
+
+			proxy(c.tlsConfig, network.Engine.Addr, w, r)
+		} else if network.Scope == "global" {
+			network.Containers = c.cluster.Networks().List(network.ID).Endpoints()
+
+			json.NewEncoder(w).Encode(network)
+		}
+		return
+	}
+	httpError(w, fmt.Sprintf("No such network: %s", id), http.StatusNotFound)
+}
+
 // GET /volumes
 func getVolumes(c *context, w http.ResponseWriter, r *http.Request) {
 	volumes := struct {

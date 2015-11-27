@@ -48,7 +48,7 @@ var routes = map[string]map[string]handler{
 		"/containers/{name:.*}/attach/ws": proxyHijack,
 		"/exec/{execid:.*}/json":          proxyContainer,
 		"/networks":                       getNetworks,
-		"/networks/{networkid:.*}":        proxyNetwork,
+		"/networks/{networkid:.*}":        getNetwork,
 		"/volumes":                        getVolumes,
 		"/volumes/{volumename:.*}":        proxyVolume,
 	},

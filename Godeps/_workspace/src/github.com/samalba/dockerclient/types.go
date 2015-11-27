@@ -494,6 +494,7 @@ type NetworkResource struct {
 	Driver     string
 	IPAM       IPAM
 	Containers map[string]EndpointResource
+	Options    map[string]string
 }
 
 //EndpointResource contains network resources allocated and usd for a container in a network
